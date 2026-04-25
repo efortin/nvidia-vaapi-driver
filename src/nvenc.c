@@ -56,8 +56,6 @@ void nvenc_unload(NvencFunctions **nvenc_dl)
 
 bool nvenc_open_session(NVENCContext *nvencCtx, NvencFunctions *nvenc_dl, CUcontext cudaCtx)
 {
-    memset(nvencCtx, 0, sizeof(*nvencCtx));
-
     /* Fill function list */
     nvencCtx->funcs.version = NV_ENCODE_API_FUNCTION_LIST_VER;
     NVENCSTATUS st = nvenc_dl->NvEncodeAPICreateInstance(&nvencCtx->funcs);
@@ -134,6 +132,7 @@ bool nvenc_init_encoder(NVENCContext *nvencCtx, uint32_t width, uint32_t height,
 
     //apply overrides
     memcpy(&nvencCtx->encodeConfig, &presetConfig.presetCfg, sizeof(NV_ENC_CONFIG));
+    nvencCtx->encodeConfig.encodeCodecConfig.hevcConfig.pixelBitDepthMinus8 = nvencCtx->inputFormat == NV_ENC_BUFFER_FORMAT_YUV420_10BIT? 2: 0;
     nvencCtx->encodeConfig.version = NV_ENC_CONFIG_VER;
     nvencCtx->encodeConfig.profileGUID = profileGuid;
 
